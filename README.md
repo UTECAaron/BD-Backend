@@ -1,7 +1,8 @@
 
 # eSports Challenge League – Plataforma de Pronósticos Competitivos de eSports
 ### CS 2031 – Desarrollo Basado en Plataforma
-### Integrantes
+
+## Integrantes
 - Luciano Gabriel Rivera Valentín – 202410149
 - Aaron Adriano Romano Castro – 202410322
 - Anthony Yair Caypane Ramírez – 202410690
@@ -19,7 +20,7 @@
 6. Instrucciones de Instalación y Ejecución  
 7. Variables de Entorno  
 8. Endpoints Documentados  
-9. Modelo de Entidades y Diagramas  
+9. Modelo de Entidades (ACTUALIZADO)  
 10. Decisiones de Diseño  
 11. Cumplimiento de la Rúbrica  
 12. Seguridad  
@@ -33,38 +34,36 @@
 ---
 
 # 1. Introducción
-El proyecto **eSports Challenge League** es una plataforma backend diseñada para permitir pronósticos de resultados en torneos de eSports de manera completamente gratuita y sin apuestas monetarias. La plataforma implementa arquitectura moderna, seguridad con JWT, integración de APIs externas, eventos asincrónicos, notificaciones (email y SMS), y un sistema robusto de ranking y puntos.
+El proyecto **eSports Challenge League** es una plataforma backend que permite pronósticos gratuitos en torneos de eSports. El sistema implementa autenticación JWT, arquitectura modular, mapeos DTO, eventos asincrónicos, notificaciones, ranking dinámico y pruebas automatizadas.
 
 ---
 
 # 2. Identificación del Problema
-Los fanáticos de los eSports no cuentan con espacios accesibles para competir mediante predicciones sin involucrar dinero. Las plataformas actuales exigen apuestas o no son amigables para usuarios casuales.
+Los fanáticos de los eSports no cuentan con plataformas accesibles para competir mediante predicciones sin involucrar dinero. Las plataformas existentes son de apuestas o demasiado complejas.
 
 ---
 
 # 3. Descripción de la Solución
 La plataforma permite:
-- Registrar usuarios  
-- Realizar pronósticos  
-- Ver torneos activos  
-- Consultar un ranking global  
-- Ganar premios digitales  
-- Recibir notificaciones por email y SMS  
-
-Toda la lógica está implementada siguiendo buenas prácticas: SRP, DTO mapping, servicios, repositorios, seguridad, eventos y pruebas automáticas.
+- Registro y autenticación segura
+- Realizar pronósticos
+- Ver torneos y partidas
+- Recibir notificaciones por email y SMS
+- Ranking dinámico por desempeño
+- Premios virtuales y badges
 
 ---
 
 # 4. Funcionalidades Implementadas
-- Login y Registro (JWT + BCrypt)  
+- Login y Registro con JWT  
 - CRUD de Torneos  
 - Sistema de Pronósticos  
-- Puntos automáticos  
-- Ranking global  
-- Premios virtuales  
+- Recalculo automático del ranking  
+- Premios digitales  
 - Historial de predicciones  
 - Notificaciones (email + SMS)  
-- Eventos asincrónicos  
+- Sistema de eventos asincrónicos  
+- Audit logs  
 
 ---
 
@@ -76,7 +75,6 @@ Toda la lógica está implementada siguiendo buenas prácticas: SRP, DTO mapping
 - Spring Security  
 - Spring Data JPA  
 - Validation  
-- Mail Sender  
 - MapStruct  
 
 ### Base de Datos
@@ -84,8 +82,8 @@ Toda la lógica está implementada siguiendo buenas prácticas: SRP, DTO mapping
 - TestContainers  
 
 ### Notificaciones
-- SendGrid (email)  
-- Twilio (SMS)  
+- SendGrid  
+- Twilio  
 
 ### APIs externas
 - Riot Games API  
@@ -94,31 +92,28 @@ Toda la lógica está implementada siguiendo buenas prácticas: SRP, DTO mapping
 ### DevOps & Tools
 - GitHub Actions  
 - GitHub Projects  
-- Docker Desktop  
+- Docker  
 - Postman  
 
 ---
 
 # 6. Instrucciones de Instalación y Ejecución
 
-### 1. Clonar el repositorio
+### 1. Clonar repositorio
 ```
 git clone https://github.com/tuRepositorio/eSports-Challenge-League.git
 ```
 
-### 2. Importar en IntelliJ
-Seleccionar:
-- Maven project  
-- Java 17  
+### 2. Importar en IntelliJ (Java 17)
 
-### 3. Crear base de datos PostgreSQL
+### 3. Crear base de datos
 ```
 CREATE DATABASE esports;
 ```
 
-### 4. Configurar variables de entorno (ver sección 7)
+### 4. Configurar variables de entorno (sección 7)
 
-### 5. Ejecutar la aplicación
+### 5. Ejecutar aplicación
 ```
 mvn spring-boot:run
 ```
@@ -126,144 +121,133 @@ mvn spring-boot:run
 ---
 
 # 7. Variables de Entorno
-Agregar estas variables al entorno o al archivo `.env`:
-
 | Variable | Descripción |
 |---------|-------------|
 | DB_URL | jdbc:postgresql://localhost:5432/esports |
-| DB_USERNAME | usuario de PostgreSQL |
-| DB_PASSWORD | contraseña |
-| JWT_SECRET | clave secreta para tokens |
-| SENDGRID_API_KEY | API key de SendGrid |
-| TWILIO_SID | SID de Twilio |
-| TWILIO_TOKEN | Token de Twilio |
+| DB_USERNAME | Usuario |
+| DB_PASSWORD | Contraseña |
+| JWT_SECRET | Clave secreta JWT |
+| SENDGRID_API_KEY | Email provider |
+| TWILIO_SID | SMS provider |
+| TWILIO_TOKEN | Token Twilio |
 | TWILIO_PHONE | Teléfono remitente |
-| ESPORTS_API_KEY | API Key de Esports API |
+| ESPORTS_API_KEY | API Key externa |
 
 ---
 
 # 8. Endpoints Documentados
-
 ### Auth
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| POST | /api/v1/auth/register | Registro de usuario |
-| POST | /api/v1/auth/login | Inicio de sesión |
+- POST /api/v1/auth/register  
+- POST /api/v1/auth/login  
 
 ### Torneos
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | /api/v1/tournaments | Listar torneos |
-| POST | /api/v1/tournaments | Crear torneo (ADMIN) |
+- GET /api/v1/tournaments  
+- POST /api/v1/tournaments  
 
 ### Pronósticos
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| POST | /api/v1/predictions | Crear pronóstico |
-| GET | /api/v1/predictions/user | Obtener pronósticos del usuario |
+- POST /api/v1/predictions  
+- GET /api/v1/predictions/user  
 
 ### Ranking
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | /api/v1/ranking | Ranking global |
+- GET /api/v1/ranking  
 
 ### Premios
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | /api/v1/rewards | Listar premios |
+- GET /api/v1/rewards  
 
 ---
 
-# 9. Modelo de Entidades y Diagramas
+# 9. Modelo de Entidades (ACTUALIZADO)
+Estas son las entidades DEFINITIVAS después de tu optimización:
 
-## Entidades principales
-- User  
-- Role  
-- Tournament  
-- Prediction  
-- MatchResult  
-- Ranking  
-- Points  
-- Reward  
+1. **User**  
+2. **Role**  
+3. **Tournament**  
+4. **Match**  
+5. **MatchResult**  
+6. **Prediction**  
+7. **Ranking**  
+8. **Reward**  
+9. **UserReward**  
+10. **UserTournament**  
+11. **NotificationLog**  
 
-## Diagrama ER
-*(Reemplazar por imagen en GitHub)*  
+> ⚠ Eliminada: `Points` (funcionalidad absorbida por Ranking)  
+> ⚠ Añadida: `NotificationLog` (para eventos + asincronía)
 
 ---
 
 # 10. Decisiones de Diseño
-- Arquitectura en capas para SRP  
-- MapStruct elegido por velocidad y limpieza  
-- JWT como método de autenticación moderno  
-- PostgreSQL para mayor integridad relacional  
-- Eventos asincrónicos para operaciones lentas (emails, ranking)  
-- TestContainers para pruebas realistas  
+- Arquitectura en capas  
+- Role como entidad independiente  
+- Ranking global simplificado  
+- Eliminación de redundancias (Points)  
+- Nuevos logs de notificación  
+- Uso obligatorio de LAZY en relaciones  
+- Uso de MapStruct para DTOs  
 
 ---
 
 # 11. Cumplimiento de la Rúbrica
-✔ Todas las entidades bien definidas  
-✔ Relaciones completas JPA  
-✔ Más de 10 DTOs  
-✔ Mappers implementados  
-✔ Arquitectura en capas con SRP  
-✔ Inyección de dependencias por constructor  
-✔ Tests de repositorio, servicio y controladores  
+✔ Más de 6 entidades  
+✔ Relaciones correctas  
+✔ DTOs especializados  
+✔ MapStruct  
+✔ SRP en servicios  
+✔ Inyección por constructor  
+✔ Tests completos  
 ✔ TestContainers  
-✔ Más de 7 excepciones personalizadas  
-✔ GlobalExceptionHandler  
-✔ JWT completo (roles, claims, refresh)  
-✔ Roles USER/ADMIN  
-✔ Endpoints RESTful correctos  
-✔ Eventos + asincronía  
-✔ Servicio de correo funcional  
-✔ Documentación completa  
+✔ Excepciones personalizadas (7+)  
+✔ Handler global  
+✔ JWT completo  
+✔ Roles en BD  
+✔ API REST con versionado  
+✔ Eventos y asincronía  
+✔ Email funcional  
 ✔ GitHub Actions  
-✔ Preparado para AWS  
+✔ Documentación completa  
 
 ---
 
 # 12. Seguridad
-- JWT + roles  
+- JWT  
 - BCrypt  
-- Validaciones  
-- CORS configurado  
-- Filtros de autenticación  
+- Filtros  
+- CORS  
+- Roles y Claims  
 
 ---
 
 # 13. Testing
-- JUnit  
-- Mockito  
-- DataJpaTest  
-- MockMvc  
+- Unit tests (Mockito)  
+- Integration tests (MockMvc)  
+- DataJpa tests  
 - TestContainers  
 
 ---
 
 # 14. Eventos y Asincronía
-- PredictionCreatedEvent → email  
-- ResultsUpdatedEvent → recalcular ranking  
-- UserRewardAssignedEvent → SMS  
-- @Async activado  
+- PredictionCreatedEvent  
+- ResultsUpdatedEvent  
+- UserRewardAssignedEvent  
+- Uso de @Async  
 
 ---
 
 # 15. GitHub & Management
-- Uso de GitFlow  
-- Issues por tarea  
-- Board en GitHub Projects  
-- CI/CD con GitHub Actions  
+- GitFlow  
+- Pull Requests  
+- GitHub Actions  
+- GitHub Issues / Projects  
 
 ---
 
 # 16. Link a Deployment
-*(Agregar link cuando se despliegue en AWS/Render/Railway)*  
+*(pending)*
 
 ---
 
 # 17. Conclusión
-Backend robusto, modular, seguro, escalable y alineado al 100% con la rúbrica del curso.
+Backend robusto, escalable y alineado a todos los criterios del curso.
 
 ---
 
@@ -273,6 +257,5 @@ MIT License
 
 ### Referencias
 - Riot Games API  
-- The Esports API  
-- Spring Boot Docs  
-- Twilio / SendGrid Docs  
+- Esports API  
+- Spring Documentation  
